@@ -1,0 +1,17 @@
+# Dependencies (the plugin ships zero runtime deps; kept for local tooling)
+node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Local scratch
+.tmp/
+*.local

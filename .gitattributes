@@ -1,0 +1,7 @@
+# Keep the working tree byte-stable across platforms: the bundle ships Chinese
+# copy and is read by DSH verbatim, so line endings must not drift.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.ico binary

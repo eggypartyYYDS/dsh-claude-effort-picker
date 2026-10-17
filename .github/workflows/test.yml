@@ -1,0 +1,22 @@
+name: test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  offline-suite:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Offline assertions (loads the shipped bundle with a fake React/DOM)
+        run: node test/client.test.mjs
+      - name: Preview still builds from lib/client.js
+        run: node preview/build-preview.mjs
+      - name: The committed preview matches the bundle
+        run: git diff --exit-code -- preview/panel.html
