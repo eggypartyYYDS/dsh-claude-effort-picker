@@ -3,7 +3,7 @@
 **DeepSeek Harness's Claude reasoning-effort slider** · DeepSeek Harness 的 Claude 风格推理等级滑动条
 
 [![test](https://github.com/eggypartyYYDS/dsh-claude-effort-picker/actions/workflows/test.yml/badge.svg)](https://github.com/eggypartyYYDS/dsh-claude-effort-picker/actions/workflows/test.yml)
-[![license](https://img.shields.io/badge/license-MIT-4d93f8.svg)](LICENSE)
+[![license](https://img.shields.io/badge/license-GPL--3.0--or--later-8957e5.svg)](LICENSE)
 
 给 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)（DSH）用的 **Claude 风格推理等级滑条**。
 
@@ -129,7 +129,10 @@ dsh plugin --profile <profile> add github:eggypartyYYDS/dsh-claude-effort-picker
 
 ## 稳健性
 
-- **fail-open**：取不到目录、会话作用域未就绪、`/model` 结构变化、主题令牌缺失——都只影响本插件自己；
+- **切换会话 / 工作区不会掉**：席位注入面是**懒解析**的 —— 会话作用域还没挂好时不抛错，先渲染
+  「正在加载…」，再自动重试（最多 40 次 × 120ms）；作用域换了（binding 变更）会重新解析。
+  这一点很重要：渲染层把「条目抛错」当作弃权，一旦弃权，插件会整场会话失效，直到你手动关开插件。
+- **fail-open**：取不到目录、`/model` 结构变化、主题令牌缺失——都只影响本插件自己；
   尺寸动画那几行命令式 DOM 也包在 try/catch 里，失败只是不做过渡。
 - **写失败如实上报**：`select()` 返回 `{ok:false}` 或抛错时卡片内出现红色说明条
   （`session/writer-held` 翻成「会话正被其他 DSH 实例占用…」），并把乐观位置撤回；
@@ -163,4 +166,10 @@ node preview/build-preview.mjs   # 生成 preview/panel.html（CSS 与星尘都�
 
 ## 许可
 
-MIT（见 [LICENSE](LICENSE)）。图标与星尘均为自绘，无第三方素材。
+**GNU GPL v3.0 或更高版本**（见 [LICENSE](LICENSE)），版权归 `eggypartyYYDS <yyds2458@outlook.com>`（2026）。
+
+- 再分发、修改、衍生作品都必须**同样以 GPL-3.0 开源**，并**保留原作者版权声明**；分发修改版时需按 GPL 第 5 条标注改动。
+- 因为是 GPL，它**不是**「禁止商用」许可：GPL 允许商业使用（但商业分发仍受开源与署名约束）。如果确实要禁止任何商业用途，那是另一套协议（如 CC BY-NC 或自写条款），说一声我替换。
+- 图标、圆点、动画均为自绘，无第三方素材。
+
+SPDX 标识：`GPL-3.0-or-later`。
