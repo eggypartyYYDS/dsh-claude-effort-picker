@@ -3,7 +3,7 @@
 **DeepSeek Harness's Claude reasoning-effort slider** · DeepSeek Harness 的 Claude 风格推理等级滑动条
 
 [![test](https://github.com/eggypartyYYDS/dsh-claude-effort-picker/actions/workflows/test.yml/badge.svg)](https://github.com/eggypartyYYDS/dsh-claude-effort-picker/actions/workflows/test.yml)
-[![license](https://img.shields.io/badge/license-GPL--3.0--or--later-8957e5.svg)](LICENSE)
+[![license](https://img.shields.io/badge/license-NonCommercial%20%2B%20Attribution-d97757.svg)](LICENSE)
 
 给 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)（DSH）用的 **Claude 风格推理等级滑条**。
 
@@ -166,10 +166,20 @@ node preview/build-preview.mjs   # 生成 preview/panel.html（CSS 与星尘都�
 
 ## 许可
 
-**GNU GPL v3.0 或更高版本**（见 [LICENSE](LICENSE)），版权归 `eggypartyYYDS <yyds2458@outlook.com>`（2026）。
+**自定义许可：非商业 + 强制署名**（[LICENSE](LICENSE)，中文为权威文本，英文为参考译本）。
+Copyright (C) 2026 `eggypartyYYDS <yyds2458@outlook.com>`。
 
-- 再分发、修改、衍生作品都必须**同样以 GPL-3.0 开源**，并**保留原作者版权声明**；分发修改版时需按 GPL 第 5 条标注改动。
-- 因为是 GPL，它**不是**「禁止商用」许可：GPL 允许商业使用（但商业分发仍受开源与署名约束）。如果确实要禁止任何商业用途，那是另一套协议（如 CC BY-NC 或自写条款），说一声我替换。
+| ✅ 可以（免费） | ❌ 不可以（需单独授权） |
+|---|---|
+| 下载、安装、运行 | 任何**商业使用**：销售、付费下载/订阅、作为付费产品或收费服务的一部分、以营利为目的的生产经营、以广告/引流变现的托管 |
+| 个人学习、研究、教学、非营利项目 | 移除、改写或隐藏原作者署名与版权声明 |
+| 修改、制作衍生作品、免费再分发 | 把修改版说成原作者发布，或以"原创"名义单独发布 |
+| 在保留许可与署名的前提下随其它非商业项目一起分发 | 改用其它协议再分发（衍生作品必须沿用本许可） |
+
+- **署名怎么做**：保留 LICENSE 全文、版权声明与项目地址；并在显眼处（README / 致谢页 / 发布说明）写明
+  「基于 eggypartyYYDS 的 DSH Claude 推理等级滑条」+ `https://github.com/eggypartyYYDS/dsh-claude-effort-picker`；
+  改过的版本还要注明"已修改"。
+- **商业授权**：联系 `yyds2458@outlook.com` 单独洽谈。
+- 因为含"禁止商业使用"，这**不是** OSI 认可的开源许可，GitHub 的许可证栏会显示 **Other** —— 这是正常的，
+  文件本身完整有效。`package.json` 用 npm 的规范写法 `"license": "SEE LICENSE IN LICENSE"`。
 - 图标、圆点、动画均为自绘，无第三方素材。
-
-SPDX 标识：`GPL-3.0-or-later`。

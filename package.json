@@ -1,8 +1,8 @@
 {
   "name": "dsh-claude-effort-picker",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Claude 风格的推理等级滑条：蓝色渐变胶囊轨道 + 奶油色大旋钮 + 向右流动的圆点，High→最高档之间渐变染色，⚡ 点亮只加速不换档 / A Claude-style reasoning-effort slab for DeepSeek Harness",
-  "license": "GPL-3.0-or-later",
+  "license": "SEE LICENSE IN LICENSE",
   "author": "eggypartyYYDS",
   "keywords": [
     "dsh",
