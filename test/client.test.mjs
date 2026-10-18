@@ -619,7 +619,7 @@ function makeCtx(options) {
 				},
 				bind: () => (key, params) => T.interpolate(T.zh[key] === undefined ? key : T.zh[key], params)
 			},
-			sessions: { subagentAddress: () => undefined },
+			sessions: { subagentAddress: () => undefined, binding: () => ({ id: "binding-1" }) },
 			slots: {
 				inject(name, run) {
 					captured.slotInjectName = name;
@@ -674,18 +674,83 @@ await check("apply registers the composer seat at a shadowing priority", () => {
 	equal(registration.locale, "claude-effort-picker", "locale namespace");
 	assert(typeof captured.registered[0].component === "function", "seat component installed");
 	const face = registration.inject("session-9");
-	equal(captured.directorySession, "session-9", "directory resolved for the session");
 	equal(face.sessionId, "session-9", "session id forwarded");
 	equal(face.available, true, "available for an ordinary session");
-	assert(typeof face.directory.getSnapshot === "function", "store forwarded");
+	equal(captured.directorySession, undefined, "resolution is lazy: a switch cannot throw out of inject");
+	/* the first read resolves the real directory */
+	const snapshot = face.directory.getSnapshot();
+	equal(captured.directorySession, "session-9", "directory resolved on first read");
+	equal(snapshot.current.provider, "deepseek-account", "real snapshot served");
+	assert(typeof face.directory.subscribe === "function", "store face subscribes");
 	assert(typeof face.load === "function" && typeof face.select === "function", "verbs forwarded");
+	face.close();
+});
+
+await check("the seat face survives a session switch and recovers by itself", async () => {
+	let attempts = 0;
+	const realStore = makeStore(makeSnapshot());
+	const services = {
+		sessions: { subagentAddress: () => undefined, binding: () => ({ id: "binding-x" }) },
+		modelDirectories: {
+			directoryFor() {
+				attempts += 1;
+				if (attempts <= 2) throw new Error('ui-model-selection: session "s-1" resolved no scope');
+				return {
+					store: realStore,
+					load: () => Promise.resolve(),
+					select: () => Promise.resolve({ ok: true })
+				};
+			}
+		}
+	};
+	const face = T.makeSeatFace({ models: services.modelDirectories, sessions: services.sessions }, "s-1");
+	equal(face.directory.getSnapshot().status, "loading", "a missing scope yields the loading snapshot instead of a throw");
+	let notified = 0;
+	face.directory.subscribe(() => { notified += 1; });
+	face.load();
+	await new Promise((resolve) => setTimeout(resolve, 600));
+	assert(notified > 0, "subscribers are woken once the scope appears");
+	equal(face.directory.getSnapshot().current.provider, "deepseek-account", "and real data replaces the placeholder");
+	face.close();
+});
+
+await check("a face whose session never gets a scope stays quiet", async () => {
+	let calls = 0;
+	const face = T.makeSeatFace({
+		models: { directoryFor() { calls += 1; return { store: makeStore(makeSnapshot()) }; } },
+		sessions: { subagentAddress: () => undefined, binding: () => undefined }
+	}, "lonely");
+	equal(face.directory.getSnapshot().status, "loading", "still the loading snapshot");
+	equal(face.available, true, "the session is addressable, just not mounted yet");
+	face.select({ provider: "p", model: "m" }).then((value) => equal(value, undefined, "selecting before the scope is a no-op")).catch(() => {});
+	await new Promise((resolve) => setTimeout(resolve, 150));
+	equal(calls, 0, "directoryFor is not even asked while the binding is missing");
+	face.close();
+});
+
+await check("a seat with an unusable store renders instead of crashing", () => {
+	const brokenStore = {
+		getSnapshot() { throw new Error("disposed store"); },
+		subscribe() { throw new Error("disposed store"); }
+	};
+	const tree = React.__render(Seat, { locked: false, available: true, sessionId: "s", directory: brokenStore, load() {}, select() {} }, "broken-store");
+	const trigger = findTrigger(tree);
+	assert(trigger !== undefined, "the trigger still renders");
+	assert(textOf(trigger).includes("正在加载"), "it falls back to the loading label");
+	assert(trigger.props.disabled === false, "and stays clickable");
+
+	const tree2 = React.__render(Seat, { sessionId: "s" }, "no-store");
+	const trigger2 = findTrigger(tree2);
+	assert(trigger2 !== undefined, "a missing store renders too");
+	equal(trigger2.props.disabled, true, "but it is inert rather than crashing");
 });
 
 await check("addressed subagent sessions are unavailable", () => {
-	const { ctx, captured } = makeCtx({ services: { sessions: { subagentAddress: () => ({ agentId: "a" }) } } });
+	const { ctx, captured } = makeCtx({ services: { sessions: { subagentAddress: () => ({ agentId: "a" }), binding: () => ({ id: "binding-1" }) } } });
 	exports.apply(ctx);
 	const face = captured.registered[0].registration.inject("sub-1");
 	equal(face.available, false, "availability flag");
+	face.close();
 });
 
 await check("/model is redirected to the same slab and restored on dispose", () => {
