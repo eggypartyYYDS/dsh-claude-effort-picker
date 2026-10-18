@@ -20,10 +20,10 @@
 ```
 输入框工具行                                点开之后
 ┌──────────────────────────────┐      ┌────────────────────────────────────────┐
-│ DeepSeek-V41-Flash · High ⌄ │      │ ⚡        High ›                ↺      │
+│ DeepSeek-V41-Flash · High ⌄  │      │⚡        High ›                ↺      │
 └──────────────────────────────┘      │        DeepSeek-V41-Flash              │
                                       │ ●━━━━━━━━━━━━━━━━━━━●              ·   │
-                                      │  ✦   ✧    ✦      ✧    ✦                │
+                                      │  ✦   ✧    ✦      ✧    ✦              │
                                       └────────────────────────────────────────┘
                                           ↑ 每档一枚实心圆点，填充层会把它们盖住
 ```
@@ -158,6 +158,8 @@ node preview/build-preview.mjs   # 生成 preview/panel.html（CSS 与星尘都�
 
 `test/` 里没有真 React：一个按实例保存 hook 表的小桩件 + 够用的假 DOM，
 但跑的是**真的 client.js**（`window.__ModuleLoader__.load` → `factory(require)`）。
+所有开发与上传（包括这个README.md）均由DeepSeek HARNESS独立完成，没有人工修改。
+制作by deepseek harness&哔哩哔哩 爱玩windows的system
 
 ## 许可
 
