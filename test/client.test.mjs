@@ -415,7 +415,7 @@ const T = exports.__testables;
 
 await check("bundle exposes apply and inject", () => {
 	assert(typeof exports.apply === "function", "apply must be a function");
-	equal(exports.inject, ["locale", "sessions", "slots", "modelDirectories"], "service inject list");
+	equal(exports.inject, ["locale", "sessions", "slots", "modelDirectories", "remote", "remote.session"], "service inject list (remote.session is needed by the shipped resolver)");
 });
 
 await check("locale dictionaries share one key set", () => {
