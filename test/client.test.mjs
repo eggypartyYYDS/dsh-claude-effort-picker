@@ -714,17 +714,24 @@ await check("the seat face survives a session switch and recovers by itself", as
 	face.close();
 });
 
-await check("a face whose session never gets a scope stays quiet", async () => {
+await check("a face whose scope never appears degrades to a visible error", async () => {
 	let calls = 0;
 	const face = T.makeSeatFace({
-		models: { directoryFor() { calls += 1; return { store: makeStore(makeSnapshot()) }; } },
-		sessions: { subagentAddress: () => undefined, binding: () => undefined }
+		models: {
+			directoryFor() {
+				calls += 1;
+				throw new Error('ui-model-selection: session "lonely" resolved no scope');
+			}
+		},
+		sessions: { subagentAddress: () => undefined }
 	}, "lonely");
-	equal(face.directory.getSnapshot().status, "loading", "still the loading snapshot");
-	equal(face.available, true, "the session is addressable, just not mounted yet");
-	face.select({ provider: "p", model: "m" }).then((value) => equal(value, undefined, "selecting before the scope is a no-op")).catch(() => {});
-	await new Promise((resolve) => setTimeout(resolve, 150));
-	equal(calls, 0, "directoryFor is not even asked while the binding is missing");
+	const first = face.directory.getSnapshot();
+	equal(first.status, "loading", "starts as a loading placeholder");
+	assert(calls > 0, "the resolver is asked directly, with no local gate to get stuck on");
+	await new Promise((resolve) => setTimeout(resolve, 1600));
+	const later = face.directory.getSnapshot();
+	equal(later.status, "error", "after the grace period it reports a failure instead of spinning forever");
+	assert(String(later.error).includes("resolved no scope"), "and carries the real reason, so it is diagnosable");
 	face.close();
 });
 
